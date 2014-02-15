@@ -3,11 +3,18 @@ import java.util.List;
 
 
 public class CommonFun {
+	
 	public static final String trim(Object obj) {
 		if (obj == null) return "";
 		return obj.toString().trim();
 	}
-
+	
+	/**
+	 * 主要用于汉字超出指定长度后，分别截取为多个子片段
+	 * @param limit 限制长度
+	 * @param content 全文
+	 * @return 片段
+	 */
 	public static final List<String> cut(int limit, String content) {
 		List<String> list = new ArrayList<String>();
 		cut0(limit, content, list);
