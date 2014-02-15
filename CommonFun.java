@@ -38,7 +38,7 @@ public class CommonFun {
 	}
 
 	static boolean isAsciiPrintable(final char ch) {
-        return ch >= 32 && ch < 127;
-    }
+        	return ch >= 32 && ch < 127;
+    	}
 
 }
