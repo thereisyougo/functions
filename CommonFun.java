@@ -62,4 +62,71 @@ public class CommonFun {
 		return false;
 	}
 
+	public static class SplitMessage {
+        private List<String> msgs = new ArrayList<>();
+        private int len;
+        private char fillChar;
+
+        public SplitMessage(int len, char fillChar) {
+            this.len = len;
+            this.fillChar = fillChar;
+        }
+
+        public void padRight(String content) {
+            int totalLength = content.chars().mapToObj(i -> (char) i).mapToInt(c -> {
+                if (isChinese(c))
+                    return 2;
+                return 1;
+            }).reduce(0, (a, b) -> a + b);
+
+            if (totalLength == len) {
+                msgs.add(content);
+            } else if (totalLength < len) {
+                msgs.add(new StringBuilder(content).append(fillChars(len - totalLength, fillChar)).toString());
+            } else {
+                char[] chars = content.toCharArray();
+                int lens = 0, i = 0;
+                StringBuilder buf = new StringBuilder(128);
+                for (; i < chars.length; i++) {
+                    char currentChar = chars[i];
+                    int currentCharLength = isChinese(currentChar) ? 2 : 1;
+                    lens += currentCharLength;
+                    if (lens <= len)
+                        buf.append(currentChar);
+                    if (lens > len) {
+                        i--;
+                        lens -= currentCharLength;
+                        break;
+                    }
+                }
+                padRight(content.substring(i + 1));
+                if (lens < len)
+                    buf.append(fillChars(len - lens, fillChar));
+                msgs.add(buf.toString());
+            }
+        }
+
+        public static boolean isChinese(char c) {
+            Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+            if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                    || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B
+                    || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                    || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS)
+                return true;
+            return false;
+        }
+
+        public char[] fillChars(int length, char fillChar) {
+            char[] target = new char[length];
+            if (length > 0) Arrays.fill(target, fillChar);
+            return target;
+        }
+
+        public List<String> getMsgs() {
+            return msgs;
+        }
+    }
+
 }
